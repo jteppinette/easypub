@@ -1,0 +1,123 @@
+html {
+  background-color: #eceff4;
+  box-sizing: border-box;
+  color: #2e3440;
+  font-size: 16px;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+a,
+a:visited,
+a:hover,
+a:active {
+  color: inherit;
+}
+
+.main > .ql-toolbar {
+  background-color: white;
+  border: solid #d8dee9;
+  border-width: 0 0 1px;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+}
+
+.main > .ql-container {
+  border: none;
+  padding: 0 16px 16px 16px;
+}
+
+.main > .ql-container > .ql-editor {
+  background-color: white;
+  border-radius: 0 0 8px 8px;
+  border: solid #d8dee9;
+  border-width: 0 1px 1px;
+  font-size: 16px;
+  margin: 0 auto;
+  max-width: 80ch;
+  padding-top: 60px;
+}
+
+.main > .ql-container > .ql-editor h1 {
+  font-size: 48px;
+}
+
+.container {
+  padding: 0 16px 16px 16px;
+}
+
+.panel {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #d8dee9;
+  margin: 0 auto;
+  max-width: 80ch;
+  background-color: white;
+  padding: 16px;
+}
+
+.input-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d8dee9;
+  border-radius: 4px;
+  padding-left: 8px;
+  margin-bottom: 8px;
+}
+
+.input-box .prefix {
+  color: #4c566a;
+  padding-top: 4px;
+}
+
+.input-box input {
+  flex-grow: 1;
+  border: none;
+  outline: none;
+  padding: 8px 2px;
+  font-size: 16px;
+}
+
+.alert {
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 8px;
+  line-height: 24px;
+}
+
+.alert.alert-danger {
+  background-color: #bf616a;
+  color: white;
+}
+
+.alert.alert-warning {
+  background-color: #d08770;
+  color: white;
+}
+
+.alert.alert-success {
+  background-color: #5e81ac;
+  color: white;
+}
+
+button {
+  width: 100%;
+  font-size: 16px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.secret {
+  text-align: center;
+}

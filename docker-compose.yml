@@ -1,0 +1,24 @@
+version: "3"
+
+volumes:
+  cache:
+  storage:
+
+services:
+  cache:
+    image: redis:7
+    ports:
+      - 6379:6379
+    volumes:
+      - cache:/data
+
+  storage:
+    image: minio/minio
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: access
+      MINIO_SECRET_KEY: secret
+    command: server /data
+    volumes:
+      - storage:/data

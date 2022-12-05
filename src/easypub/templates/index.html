@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>easypub.io</title>
+
+    <link rel="icon" href="data:," />
+
+    <link href="https://unpkg.com/quill@1.3.7/dist/quill.snow.css" rel="stylesheet" />
+
+    <link href="{{ static_url_for("static", "index.css") }}" rel="stylesheet" />
+  </head>
+
+  <body class="main">
+    <div id="quill"></div>
+    <div id="app"></div>
+
+    <script src="https://unpkg.com/quill@1.3.7/dist/quill.min.js"></script>
+    <script src="https://unpkg.com/htm@3.1.1/preact/standalone.umd.js"></script>
+
+    <script src="{{ static_url_for("static", "index.js") }}"></script>
+  </body>
+</html>

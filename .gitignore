@@ -1,0 +1,15 @@
+**.egg-info
+.direnv
+.pytest_cache
+__pycache__
+.mypy_cache
+src/easypub/static/_digest
+
+# Add the following files to the allowlist
+# under various searching tools.
+!.envrc
+!.flake8
+!.github
+!.gitignore
+!.pre-commit-config.yaml
+!.profile

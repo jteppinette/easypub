@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{{ title }} :: easypub.io</title>
+
+    <link rel="icon" href="data:," />
+
+    <style>
+      body {
+        margin: 1em auto;
+        max-width: 35em;
+        padding: 0em 0.62em;
+        font-size: 1.2em;
+        font-family: sans-serif;
+        line-height: 1.2;
+      }
+
+      hr {
+        margin: 1.5em 0em;
+      }
+
+      ul {
+        margin-top: 0.75em;
+      }
+
+      li {
+        margin-top: 0.5em;
+      }
+
+      @media print {
+        body {
+          max-width: none;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <pre>{{ secret_hash }}</pre>
+    <hr />
+
+    {{ content|safe }}
+  </body>
+</html>
