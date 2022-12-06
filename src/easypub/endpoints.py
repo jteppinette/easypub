@@ -1,3 +1,4 @@
+import gzip
 import io
 import secrets
 import string
@@ -85,13 +86,14 @@ class PublishEndpoint(HTTPEndpoint):
             mapping={"secret_hash": secret_hash},
         )
 
-        encoded_content = form.content.encode("utf-8")
+        encoded_content = gzip.compress(form.content.encode())
         await config.s3.put_object(
             "posts",
             form.slug,
             io.BytesIO(encoded_content),
             len(encoded_content),
             content_type="text/html",
+            metadata={"content-encoding": "gzip"},
         )
 
         return JSONResponse(
