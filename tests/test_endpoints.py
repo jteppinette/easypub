@@ -125,7 +125,7 @@ class TestPublishEndpoint:
         )
 
         redis_hset.assert_awaited_once()
-        redis_hset.await_args.args == ["post:test"]
+        redis_hset.await_args.args == ["metadata:test"]
 
         assert len(redis_hset.await_args.kwargs) == 1
         assert "mapping" in redis_hset.await_args.kwargs

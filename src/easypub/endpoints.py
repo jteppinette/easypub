@@ -28,11 +28,11 @@ def verify_crypt_hash(secret: str, secret_hash: str) -> bool:
     return crypt_context.verify(secret, secret_hash)
 
 
-def post_key(slug: str) -> str:
+def metadata_key(slug: str) -> str:
     if not slug:
         raise ValueError("slug must be a non-empty string")
 
-    return f"post:{slug}"
+    return f"metadata:{slug}"
 
 
 class HomeEndpoint(HTTPEndpoint):
@@ -46,7 +46,7 @@ class ReadEndpoint(HTTPEndpoint):
         slug = request.path_params["slug"]
         title = string.capwords(slug.replace("-", " "))
 
-        result = await config.redis.hgetall(post_key(slug))
+        result = await config.redis.hgetall(metadata_key(slug))
         if not result:
             raise HTTPException(HTTPStatus.NOT_FOUND)
 
@@ -73,7 +73,7 @@ class PublishEndpoint(HTTPEndpoint):
     async def post(self, request):
         form = self.Form.parse_obj(await request.json())
 
-        if await config.redis.exists(post_key(form.slug)):
+        if await config.redis.exists(metadata_key(form.slug)):
             return JSONResponse(
                 {"slug": ["is used by another post"]},
                 status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
@@ -82,7 +82,7 @@ class PublishEndpoint(HTTPEndpoint):
         secret, secret_hash = generate_post_creds()
 
         await config.redis.hset(
-            post_key(form.slug),
+            metadata_key(form.slug),
             mapping={"secret_hash": secret_hash},
         )
 
