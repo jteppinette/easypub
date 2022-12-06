@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{% block title %}easypub.io{% endblock %}</title>
+
+    <link rel="icon" href="data:," />
+
+    {% block css %}
+    <link href="{{ static_url_for("static", "base.css") }}" rel="stylesheet" />
+    {% endblock %}
+  </head>
+
+  <body id="easypub">
+    {% block body %}{% endblock %}
+    {% block js %}{% endblock %}
+  </body>
+</html>

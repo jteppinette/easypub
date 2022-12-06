@@ -1,30 +1,8 @@
 html {
   background-color: #eceff4;
-  box-sizing: border-box;
-  color: #2e3440;
-  font-size: 16px;
-  font-family: Helvetica, Arial, sans-serif;
 }
 
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-}
-
-a,
-a:visited,
-a:hover,
-a:active {
-  color: inherit;
-}
-
-.main > .ql-toolbar {
+#easypub .ql-toolbar {
   background-color: white;
   border: solid #d8dee9;
   border-width: 0 0 1px;
@@ -33,38 +11,13 @@ a:active {
   z-index: 1;
 }
 
-.main > .ql-container {
+#easypub .ql-container {
   border: none;
-  padding: 0 16px 16px 16px;
 }
 
-.main > .ql-container > .ql-editor {
+#easypub .ql-container > .ql-editor {
   background-color: white;
-  border-radius: 0 0 8px 8px;
-  border: solid #d8dee9;
-  border-width: 0 1px 1px;
-  font-size: 16px;
-  margin: 0 auto;
-  max-width: 80ch;
-  padding-top: 60px;
-}
-
-.main > .ql-container > .ql-editor h1 {
-  font-size: 48px;
-}
-
-.container {
-  padding: 0 16px 16px 16px;
-}
-
-.panel {
-  background-color: white;
-  border-radius: 8px;
-  border: 1px solid #d8dee9;
-  margin: 0 auto;
-  max-width: 80ch;
-  background-color: white;
-  padding: 16px;
+  border-color: #d8dee9;
 }
 
 .input-box {

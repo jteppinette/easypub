@@ -169,7 +169,7 @@ function App() {
 
   return html`
     <div class="container">
-      <div class="panel">
+      <div class="panel panel-white">
         <form onSubmit=${submit}>
           <div class="input-box">
             <span class="prefix">${url}</span>

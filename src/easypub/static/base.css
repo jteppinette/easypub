@@ -1,0 +1,70 @@
+html {
+  box-sizing: border-box;
+  color: #2e3440;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+#easypub a {
+  color: #2c7cde;
+}
+
+#easypub .ql-container {
+  font-size: 16px;
+}
+
+#easypub .ql-container > .ql-editor {
+  margin: 0 auto;
+  max-width: 700px;
+}
+
+#easypub .ql-container > .ql-editor h1 {
+  font-size: 48px;
+}
+
+#easypub .ql-container > .ql-editor {
+  border: 1px solid white;
+  padding-top: 60px;
+}
+
+@media only screen and (min-width: 700px) {
+  #easypub .ql-container > .ql-editor {
+    border-radius: 0 0 8px 8px;
+  }
+}
+
+.container {
+  padding: 16px;
+}
+
+#easypub .container a {
+  color: inherit;
+}
+
+.panel {
+  border-radius: 8px;
+  margin: 0 auto;
+  max-width: 700px;
+  padding: 16px;
+}
+
+.panel.panel-default {
+  background-color: #eceff4;
+  border: 1px solid #e5e9f0;
+}
+
+.panel.panel-white {
+  background-color: white;
+  border: 1px solid #d8dee9;
+}
