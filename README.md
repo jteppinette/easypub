@@ -22,7 +22,6 @@ $ direnv allow
 $ pip install -r requirements/dev.txt
 $ pre-commit install
 $ docker-compose up -d
-$ easypub makebucket
 ```
 
 **Tests**
