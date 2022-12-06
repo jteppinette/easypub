@@ -18,8 +18,8 @@ jobs:
         ports:
           - 9000:9000
         env:
-          MINIO_ACCESS_KEY: access
-          MINIO_SECRET_KEY: secret
+          MINIO_ACCESS_KEY: access-key
+          MINIO_SECRET_KEY: secret-key
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -30,3 +30,4 @@ jobs:
         env:
           CACHE_URL: redis://localhost:6379/0
           DEBUG: 1
+          STORAGE_URL: http://access-key:secret-key@localhost:9000

@@ -55,6 +55,7 @@ $ open http://localhost:8000
 **Dependencies**
 
 - Redis
+- S3 (like)
 
 **Environment Variables**
 
@@ -62,6 +63,7 @@ $ open http://localhost:8000
 CACHE_URL
 DEBUG=0
 REQUEST_TIMEOUT=5
+STORAGE_URL
 WEB_CONCURRENCY=1
 ```
 
@@ -76,6 +78,17 @@ $ easypub collectstatic
 
 Notice, this is already included in the Heroku buildpack integration, so it is only necessary when performing a custom deployment.
 
+**Make Storage Bucket**
+
+The provided `easypub makebucket` needs to be ran before engaging the production server. This will create
+the required storage bucket in S3.
+
+```sh
+$ easypub makebucket
+```
+
+Notice, this is already included in the Heroku buildpack integration, so it is only necessary when performing a custom deployment.
+
 **Server**
 
 _We recommend using Gunicorn in production._
@@ -86,11 +99,23 @@ $ gunicorn --worker-class uvicorn.workers.UvicornWorker easypub.asgi:app
 
 Notice, this is already included in the Heroku `Procfile`, so it is only necessary when performing a custom deployment.
 
-## Deployment
+## Operations
 
 ### Heroku
 
+**Deployment**
+
 ```
 $ heroku create
+$ heroku addons:create heroku-redis:premium-0
+$ heroku config set \
+    CACHE_URL=`heroku config:get REDIS_URL` \
+    STORAGE_URL=<storage_url>
 $ git push heroku master
+```
+
+**Redis**
+
+```
+$ heroku redis:cli
 ```

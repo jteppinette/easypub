@@ -1,10 +1,8 @@
-from pathlib import Path
-
 import asyncclick as click
 import uvicorn
 from fastapi_static_digest import StaticDigestCompiler
 
-base_dir = Path(__file__).resolve().parent
+from easypub import config
 
 
 @click.group()
@@ -24,4 +22,11 @@ def runserver():
 
 @cli.command()
 def collectstatic():
-    StaticDigestCompiler(base_dir / "static").compile()
+    StaticDigestCompiler(config.base_dir / "static").compile()
+
+
+@cli.command()
+async def makebucket():
+    buckets = await config.s3.list_buckets()
+    if not buckets:
+        await config.s3.make_bucket("posts")

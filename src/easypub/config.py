@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from fastapi_static_digest import StaticDigest
-from pydantic import BaseSettings, RedisDsn
+from miniopy_async import Minio
+from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 from redis.asyncio import Redis
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -15,6 +16,7 @@ class Config(BaseSettings):
     debug: bool = False
     request_timeout: int = 5
     cache_url: RedisDsn
+    storage_url: AnyHttpUrl
 
     @cached_property
     def base_dir(self):
@@ -40,4 +42,13 @@ class Config(BaseSettings):
             key_func=get_remote_address,
             enabled=not self.debug,
             storage_uri=self.cache_url,
+        )
+
+    @cached_property
+    def s3(self):
+        return Minio(
+            endpoint=f"{self.storage_url.host}:{self.storage_url.port}",
+            access_key=self.storage_url.user,
+            secret_key=self.storage_url.password,
+            secure=self.storage_url.scheme == "https",
         )

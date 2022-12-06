@@ -17,8 +17,8 @@ services:
     ports:
       - 9000:9000
     environment:
-      MINIO_ACCESS_KEY: access
-      MINIO_SECRET_KEY: secret
+      MINIO_ACCESS_KEY: access-key
+      MINIO_SECRET_KEY: secret-key
     command: server /data
     volumes:
       - storage:/data

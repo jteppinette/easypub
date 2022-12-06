@@ -1,3 +1,4 @@
+import io
 import secrets
 import string
 from http import HTTPStatus
@@ -14,7 +15,7 @@ from easypub.fields import SafeHTML, Slug
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-limiter = config.limiter  # type: ignore
+limiter = config.limiter
 
 
 def generate_post_creds() -> tuple[str, str]:
@@ -48,12 +49,15 @@ class ReadEndpoint(HTTPEndpoint):
         if not result:
             raise HTTPException(HTTPStatus.NOT_FOUND)
 
+        async with await config.s3.get_object("posts", slug) as response:
+            content = await response.text()
+
         return config.templates.TemplateResponse(
             "read.html",
             {
                 "request": request,
                 "title": title,
-                "content": result[b"content"].decode(),
+                "content": content,
                 "secret_hash": result[b"secret_hash"].decode(),
             },
         )
@@ -78,7 +82,16 @@ class PublishEndpoint(HTTPEndpoint):
 
         await config.redis.hset(
             post_key(form.slug),
-            mapping={"content": form.content, "secret_hash": secret_hash},
+            mapping={"secret_hash": secret_hash},
+        )
+
+        encoded_content = form.content.encode("utf-8")
+        await config.s3.put_object(
+            "posts",
+            form.slug,
+            io.BytesIO(encoded_content),
+            len(encoded_content),
+            content_type="text/html",
         )
 
         return JSONResponse(

@@ -17,6 +17,22 @@ from easypub.endpoints import (
     crypt_context,
 )
 
+
+class MockS3Response:
+    def __init__(self, text, status):
+        self._text = text
+        self.status = status
+
+    async def text(self):
+        return self._text
+
+    async def __aexit__(self, exc_type, exc, tb):
+        pass
+
+    async def __aenter__(self):
+        return self
+
+
 app = Router(
     routes=[
         Route("/", endpoint=HomeEndpoint),
@@ -42,17 +58,24 @@ class TestHomeEndpoint:
 
 class TestReadEndpoint:
     @pytest.fixture
-    def hgetall(self, config, monkeypatch):
+    def redis_hgetall(self, config, monkeypatch):
         mock = AsyncMock()
         monkeypatch.setattr(config.redis, "hgetall", mock)
+        return mock
+
+    @pytest.fixture
+    def s3_get_object(self, config, monkeypatch):
+        mock = AsyncMock()
+        monkeypatch.setattr(config.s3, "get_object", mock)
         return mock
 
     def test_not_found(self, client):
         with pytest.raises(HTTPException, match="NOT_FOUND"):
             client.get("/test")
 
-    def test_read(self, client, hgetall):
-        hgetall.return_value = {b"content": b"c", b"secret_hash": b"s"}
+    def test_read(self, client, redis_hgetall, s3_get_object):
+        redis_hgetall.return_value = {b"secret_hash": b"s"}
+        s3_get_object.return_value = MockS3Response(text="c", status=200)
 
         response = client.get("/test")
 
@@ -65,20 +88,26 @@ class TestReadEndpoint:
 
 
 class TestPublishEndpoint:
-    @pytest.fixture(autouse=True)
-    def exists(self, config, monkeypatch):
+    @pytest.fixture
+    def redis_exists(self, config, monkeypatch):
         mock = AsyncMock()
         monkeypatch.setattr(config.redis, "exists", mock)
         return mock
 
-    @pytest.fixture(autouse=True)
-    def hset(self, config, monkeypatch):
+    @pytest.fixture
+    def redis_hset(self, config, monkeypatch):
         mock = AsyncMock()
         monkeypatch.setattr(config.redis, "hset", mock)
         return mock
 
-    def test_not_unique(self, client, exists):
-        exists.return_value = True
+    @pytest.fixture
+    def s3_put_object(self, config, monkeypatch):
+        mock = AsyncMock()
+        monkeypatch.setattr(config.s3, "put_object", mock)
+        return mock
+
+    def test_not_unique(self, client, redis_exists):
+        redis_exists.return_value = True
 
         response = client.post(
             "/api/publish", json={"slug": "test", "content": "<p>test</p>"}
@@ -88,22 +117,23 @@ class TestPublishEndpoint:
         data = response.json()
         assert data["slug"] == ["is used by another post"]
 
-    def test_publish(self, client, exists, hset):
-        exists.return_value = False
+    def test_publish(self, client, redis_exists, redis_hset, s3_put_object):
+        redis_exists.return_value = False
 
         response = client.post(
             "/api/publish", json={"slug": "test", "content": "<script>"}
         )
 
-        hset.assert_awaited_once()
-        hset.await_args.args == ["post:test"]
+        redis_hset.assert_awaited_once()
+        redis_hset.await_args.args == ["post:test"]
 
-        assert len(hset.await_args.kwargs) == 1
-        assert "mapping" in hset.await_args.kwargs
+        assert len(redis_hset.await_args.kwargs) == 1
+        assert "mapping" in redis_hset.await_args.kwargs
 
-        mapping = hset.await_args.kwargs["mapping"]
-        assert mapping["content"] == "&lt;script&gt;"
+        mapping = redis_hset.await_args.kwargs["mapping"]
         assert isinstance(mapping["secret_hash"], str)
+
+        s3_put_object.assert_awaited_once()
 
         assert response.status_code == HTTPStatus.OK
 
@@ -116,13 +146,13 @@ class TestPublishEndpoint:
 
 class TestHealthEndpoint:
     @pytest.fixture
-    def ping(self, config, monkeypatch):
+    def redis_ping(self, config, monkeypatch):
         mock = AsyncMock()
         monkeypatch.setattr(config.redis, "ping", mock)
         return mock
 
-    def test_ok(self, client, ping):
-        ping.return_value = True
+    def test_ok(self, client, redis_ping):
+        redis_ping.return_value = True
 
         response = client.get("/api/health")
         assert response.status_code == HTTPStatus.OK
