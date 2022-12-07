@@ -84,7 +84,6 @@ class TestReadEndpoint:
         assert isinstance(response.context["request"], Request)
         assert response.context["title"] == "Test"
         assert response.context["content"] == "c"
-        assert response.context["secret_hash"] == "s"
 
 
 class TestPublishEndpoint:

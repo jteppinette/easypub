@@ -63,7 +63,6 @@ class ReadEndpoint(HTTPEndpoint):
                 "request": request,
                 "content": content,
                 "title": result[b"title"].decode(),
-                "secret_hash": result[b"secret_hash"].decode(),
             },
         )
 
