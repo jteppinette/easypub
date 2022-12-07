@@ -6,6 +6,7 @@ Jinja2==3.1.2
 miniopy-async==1.11
 passlib[bcrypt]==1.7.4
 pydantic==1.10.2
+python-slugify==7.0.0
 redis==4.3.5
 slowapi==0.1.7
 starlette==0.22.0

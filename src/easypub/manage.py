@@ -3,12 +3,14 @@ import uvicorn
 from fastapi_static_digest import StaticDigestCompiler
 
 from easypub import config
+from easypub.endpoints import content_bucket
 
 
 async def _make_bucket():
     buckets = await config.s3.list_buckets()
-    if not buckets:
-        await config.s3.make_bucket("posts")
+
+    if content_bucket not in buckets:
+        await config.s3.make_bucket(content_bucket)
 
 
 @click.group()

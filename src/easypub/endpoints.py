@@ -1,22 +1,24 @@
 import gzip
 import io
 import secrets
-import string
 from http import HTTPStatus
 
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from slugify import slugify
 
 from starlette.endpoints import HTTPEndpoint
 from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from easypub import config
-from easypub.fields import SafeHTML, Slug
+from easypub.fields import SafeHTML, Title
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 limiter = config.limiter
+
+content_bucket = "content"
 
 
 def generate_post_creds() -> tuple[str, str]:
@@ -44,21 +46,20 @@ class ReadEndpoint(HTTPEndpoint):
     @limiter.limit("10/minute")
     async def get(self, request):
         slug = request.path_params["slug"]
-        title = string.capwords(slug.replace("-", " "))
 
         result = await config.redis.hgetall(metadata_key(slug))
         if not result:
             raise HTTPException(HTTPStatus.NOT_FOUND)
 
-        async with await config.s3.get_object("posts", slug) as response:
+        async with await config.s3.get_object(content_bucket, slug) as response:
             content = await response.text()
 
         return config.templates.TemplateResponse(
             "read.html",
             {
                 "request": request,
-                "title": title,
                 "content": content,
+                "title": result[b"title"].decode(),
                 "secret_hash": result[b"secret_hash"].decode(),
             },
         )
@@ -66,30 +67,31 @@ class ReadEndpoint(HTTPEndpoint):
 
 class PublishEndpoint(HTTPEndpoint):
     class Form(BaseModel):
-        slug: Slug
+        title: Title
         content: SafeHTML
 
     @limiter.limit("60/hour")
     async def post(self, request):
         form = self.Form.parse_obj(await request.json())
+        slug = slugify(form.title)
 
-        if await config.redis.exists(metadata_key(form.slug)):
+        if await config.redis.exists(metadata_key(slug)):
             return JSONResponse(
-                {"slug": ["is used by another post"]},
+                {"title": ["is already being used"]},
                 status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
             )
 
         secret, secret_hash = generate_post_creds()
 
         await config.redis.hset(
-            metadata_key(form.slug),
-            mapping={"secret_hash": secret_hash},
+            metadata_key(slug),
+            mapping={"secret_hash": secret_hash, "title": form.title},
         )
 
         encoded_content = gzip.compress(form.content.encode())
         await config.s3.put_object(
-            "posts",
-            form.slug,
+            content_bucket,
+            slug,
             io.BytesIO(encoded_content),
             len(encoded_content),
             content_type="text/html",
@@ -99,7 +101,7 @@ class PublishEndpoint(HTTPEndpoint):
         return JSONResponse(
             dict(
                 secret=secret,
-                url=str(request.url.replace(path=form.slug)),
+                url=str(request.url.replace(path=slug)),
             )
         )
 

@@ -73,7 +73,7 @@ function ValidationErrorAlert(errors) {
   }
 
   return html`
-    <div class="alert alert-warning">
+    <div class="alert alert-danger">
       <span
         >We were unable to publish your post. Resolve the following errors, then
         try again:</span
@@ -119,7 +119,7 @@ function SuccessAlert({ url, secret }) {
 }
 
 function App() {
-  const [slug, setSlug] = useState({ value: '' })
+  const [title, setTitle] = useState('')
   const [result, setResult] = useState()
   const [validationError, setValidationError] = useState()
   const [httpError, setHTTPError] = useState()
@@ -129,16 +129,6 @@ function App() {
 
   const url = `${location.protocol}//${location.host}/`
 
-  function updateSlug(value) {
-    setSlug({
-      value: value
-        .replace(/[^a-zA-Z0-9\s\-]|^[\s\-]/g, '')
-        .replace(/[\s\-]+/g, '-')
-        .toLowerCase()
-        .trim()
-    })
-  }
-
   function submit(event) {
     event.preventDefault()
 
@@ -146,7 +136,7 @@ function App() {
 
     const content = document.getElementsByClassName('ql-editor')[0].innerHTML
 
-    fetchjson('/api/publish', 'POST', { slug: slug.value, content })
+    fetchjson('/api/publish', 'POST', { title, content })
       .then(({ data }) => {
         setResult(data)
 
@@ -171,16 +161,13 @@ function App() {
     <div class="container">
       <div class="panel panel-white">
         <form onSubmit=${submit}>
-          <div class="input-box">
-            <span class="prefix">${url}</span>
-            <input
-              onInput=${(e) => updateSlug(e.target.value)}
-              value=${slug.value}
-              type="text"
-              name="slug"
-              placeholder="my-epic-post"
-            />
-          </div>
+          <input
+            onInput=${(e) => setTitle(e.target.value)}
+            value=${title}
+            type="text"
+            name="title"
+            placeholder="Title"
+          />
 
           ${validationError &&
           html`<${ValidationErrorAlert} ...${validationError} />`}

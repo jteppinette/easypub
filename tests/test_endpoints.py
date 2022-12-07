@@ -74,7 +74,7 @@ class TestReadEndpoint:
             client.get("/test")
 
     def test_read(self, client, redis_hgetall, s3_get_object):
-        redis_hgetall.return_value = {b"secret_hash": b"s"}
+        redis_hgetall.return_value = {b"secret_hash": b"s", b"title": b"Test"}
         s3_get_object.return_value = MockS3Response(text="c", status=200)
 
         response = client.get("/test")
@@ -110,18 +110,18 @@ class TestPublishEndpoint:
         redis_exists.return_value = True
 
         response = client.post(
-            "/api/publish", json={"slug": "test", "content": "<p>test</p>"}
+            "/api/publish", json={"title": "Test", "content": "<p>test</p>"}
         )
         assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
 
         data = response.json()
-        assert data["slug"] == ["is used by another post"]
+        assert data["title"] == ["is already being used"]
 
     def test_publish(self, client, redis_exists, redis_hset, s3_put_object):
         redis_exists.return_value = False
 
         response = client.post(
-            "/api/publish", json={"slug": "test", "content": "<script>"}
+            "/api/publish", json={"title": "Test", "content": "<script>"}
         )
 
         redis_hset.assert_awaited_once()
@@ -132,6 +132,7 @@ class TestPublishEndpoint:
 
         mapping = redis_hset.await_args.kwargs["mapping"]
         assert isinstance(mapping["secret_hash"], str)
+        assert mapping["title"] == "Test"
 
         s3_put_object.assert_awaited_once()
 
