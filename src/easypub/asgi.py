@@ -19,11 +19,16 @@ from easypub.endpoints import (
     PublishEndpoint,
     ReadEndpoint,
 )
-from easypub.middleware import TimeoutMiddleware
+from easypub.middleware import CacheControlMiddleware, TimeoutMiddleware
 
 routes = [
     Route("/", endpoint=HomeEndpoint),
-    Mount("/static", app=StaticFiles(directory=config.static.directory), name="static"),
+    Mount(
+        "/static",
+        app=StaticFiles(directory=config.static.directory),
+        middleware=[Middleware(CacheControlMiddleware, immutable=True)],
+        name="static",
+    ),
     Mount(
         "/api",
         routes=[
@@ -61,3 +66,4 @@ app = Starlette(
 )
 
 app.state.limiter = config.limiter
+app.state.cache_control = config.cache_control

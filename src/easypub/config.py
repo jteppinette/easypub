@@ -52,3 +52,7 @@ class Config(BaseSettings):
             secret_key=self.storage_url.password,
             secure=self.storage_url.scheme == "https",
         )
+
+    @cached_property
+    def cache_control(self):
+        return not self.debug

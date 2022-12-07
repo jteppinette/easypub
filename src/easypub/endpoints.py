@@ -12,6 +12,7 @@ from starlette.exceptions import HTTPException
 from starlette.responses import JSONResponse
 
 from easypub import config
+from easypub.decorators import cache_control
 from easypub.fields import SafeHTML, Title
 
 crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -38,12 +39,14 @@ def metadata_key(slug: str) -> str:
 
 
 class HomeEndpoint(HTTPEndpoint):
+    @cache_control(max_age="1h")
     async def get(self, request):
         return config.templates.TemplateResponse("index.html", {"request": request})
 
 
 class ReadEndpoint(HTTPEndpoint):
     @limiter.limit("10/minute")
+    @cache_control(max_age="1h")
     async def get(self, request):
         slug = request.path_params["slug"]
 
