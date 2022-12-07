@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}{{ title }} :: {{ super() }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block meta %}
+<meta property="og:title" content="{{ title }}" />
+{% endblock %}
 
 {% block css %}
 {{ super() }}
