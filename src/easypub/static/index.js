@@ -161,12 +161,13 @@ function App() {
     <div class="container">
       <div class="panel panel-white">
         <form onSubmit=${submit}>
+          <label for="title">Title</label>
           <input
             onInput=${(e) => setTitle(e.target.value)}
             value=${title}
             type="text"
             name="title"
-            placeholder="Title"
+            placeholder="My Publication Name"
           />
 
           ${validationError &&
