@@ -37,7 +37,9 @@ class SafeHTML(str):
         if not isinstance(v, str):
             raise TypeError("must be a string")
 
-        return cls(bleach.clean(v, tags=cls.ALLOWED_TAGS))
+        return cls(
+            bleach.clean(v, strip=True, strip_comments=True, tags=cls.ALLOWED_TAGS)
+        )
 
     def __repr__(self):
         return f"SafeHTML({super().__repr__()})"

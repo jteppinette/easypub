@@ -1,6 +1,6 @@
 const { render, html, useState } = htmPreact
 
-function App({ slug, title }) {
+function App({ slug, title, quill }) {
   const [secret, setSecret] = useState('')
   const [result, setResult] = useState()
   const [validationError, setValidationError] = useState()
@@ -11,14 +11,12 @@ function App({ slug, title }) {
   const submitText = isLoading ? 'Updating...' : 'Update'
   const deleteText = isDeleting ? 'Deleting...' : 'Delete'
 
-  const url = `${location.protocol}//${location.host}/`
-
   function submit(event) {
     event.preventDefault()
 
     setIsLoading(true)
 
-    const content = document.getElementsByClassName('ql-editor')[0].innerHTML
+    const content = quill.root.innerHTML
 
     fetchjson(`/api/${slug}/update`, 'POST', { content, secret })
       .then(({ data }) => {
@@ -105,9 +103,6 @@ function App({ slug, title }) {
   `
 }
 
-function app({ slug, title }) {
-  render(
-    html`<${App} slug=${slug} title=${title} />`,
-    document.getElementById('app')
-  )
+function app(props) {
+  render(html`<${App} ...${props} />`, document.getElementById('app'))
 }

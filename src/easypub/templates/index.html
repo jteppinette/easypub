@@ -29,17 +29,8 @@ html {
 <script src="{{ static_url_for('static', 'common.js') }}"></script>
 <script src="{{ static_url_for('static', 'index.js') }}"></script>
 <script>
-  editor({text: `
-    <h1>Welcome to EasyPub.io</h1>
-    <p>When a reviewer wishes to give special recognition to a book, he predicts that it will still be read “a hundred years from now.” The Law, first published as a pamphlet in June, 1850, is already more than a hundred years old. And because its truths are eternal, it will still be read when another century has passed. Frederic Bastiat (1801-1850) was a French economist, statesman, and author. He did most of his writing during the years just before — and immediately following — the Revolution of February 1848. This was the period when France was rapidly turning to complete socialism. As a Deputy to the Legislative Assembly, Mr. Bastiat was studying and explaining each socialist fallacy as it appeared. And he explained how socialism must inevitably degenerate into communism. But most of his countrymen chose to ignore his logic. The Law is here presented again because the same situation exists in America today as in the France of 1848. The same socialist-communist ideas and plans that were then adopted in France are now sweeping America. The explanations and arguments then advanced against socialism by Mr. Bastiat are — word for word — equally valid today. His ideas deserve a serious hearing:</p>
-    <ul>
-       <li>Morbi in sem quis dui placerat ornare. Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu. Cras consequat.</li>
-       <li>Praesent dapibus, neque id cursus faucibus, tortor neque egestas augue, eu vulputate magna eros eu erat. Aliquam erat volutpat. Nam dui mi, tincidunt quis, accumsan porttitor, facilisis luctus, metus.</li>
-       <li>Phasellus ultrices nulla quis nibh. Quisque a lectus. Donec consectetuer ligula vulputate sem tristique cursus. Nam nulla quam, gravida non, commodo a, sodales sit amet, nisi.</li>
-       <li>Pellentesque fermentum dolor. Aliquam quam lectus, facilisis auctor, ultrices ut, elementum vulputate, nunc.</li>
-    </ul>
-  `})
+  const quill = editor({{ static_url_for('static', 'intro.html')|jsonify }})
 
-  app()
+  app({quill})
 </script>
 {% endblock %}

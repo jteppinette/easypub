@@ -30,10 +30,9 @@ html {
 <script src="{{ static_url_for('static', 'common.js') }}"></script>
 <script src="{{ static_url_for('static', 'admin.js') }}"></script>
 <script>
-  editor({
-    url: {{ content_url|jsonify }},
-  })
+  const quill = editor({{ content_url|jsonify }})
   app({
+    quill,
     slug: {{slug|jsonify}},
     title: {{ title|jsonify }},
   })

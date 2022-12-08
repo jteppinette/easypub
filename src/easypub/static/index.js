@@ -1,6 +1,6 @@
 const { render, html, useState, useEffect } = htmPreact
 
-function App() {
+function App({ quill }) {
   const [title, setTitle] = useState('')
   const [result, setResult] = useState()
   const [validationError, setValidationError] = useState()
@@ -14,7 +14,7 @@ function App() {
 
     setIsLoading(true)
 
-    const content = document.getElementsByClassName('ql-editor')[0].innerHTML
+    const content = quill.root.innerHTML
 
     fetchjson('/api/publish', 'POST', { title, content })
       .then(({ data }) => {
@@ -65,6 +65,6 @@ function App() {
   `
 }
 
-function app() {
-  render(html`<${App} />`, document.getElementById('app'))
+function app(props) {
+  render(html`<${App} ...${props} />`, document.getElementById('app'))
 }

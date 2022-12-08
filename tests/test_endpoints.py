@@ -1,3 +1,4 @@
+from copy import deepcopy
 from http import HTTPStatus
 
 import pytest
@@ -5,7 +6,6 @@ import pytest
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.routing import Router
-from starlette.templating import Jinja2Templates
 from starlette.testclient import TestClient
 
 from easypub.endpoints import crypt_context
@@ -21,7 +21,7 @@ def app():
 
 @pytest.fixture
 def client(config, app):
-    config.templates = Jinja2Templates(directory=config.base_dir / "templates")
+    config.templates = deepcopy(config.templates)
     config.templates.env.globals["static_url_for"] = lambda name, path: path
     return TestClient(app)
 
