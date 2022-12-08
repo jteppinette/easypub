@@ -1,3 +1,5 @@
+from unittest.mock import DEFAULT, AsyncMock, patch
+
 import pytest
 
 from easypub import config as appconfig
@@ -24,3 +26,30 @@ def config():
     proxy = Proxy()
     yield proxy
     proxy.unwind()
+
+
+@pytest.fixture
+def redis(config):
+    with patch.multiple(
+        config.redis,
+        new_callable=AsyncMock,
+        delete=DEFAULT,
+        exists=DEFAULT,
+        hgetall=DEFAULT,
+        hset=DEFAULT,
+        ping=DEFAULT,
+    ):
+        yield config.redis
+
+
+@pytest.fixture
+def s3(config):
+    with patch.multiple(
+        config.s3,
+        new_callable=AsyncMock,
+        get_object=DEFAULT,
+        get_presigned_url=DEFAULT,
+        put_object=DEFAULT,
+        remove_object=DEFAULT,
+    ):
+        yield config.s3
