@@ -26,6 +26,8 @@ jobs:
         with:
           python-version: '3.10.8'
       - run: pip install -e . -r requirements/test.txt
+      - run: easypub collectstatic
+      - run: easypub makebucket
       - run: pytest
         env:
           CACHE_URL: redis://localhost:6379/0
