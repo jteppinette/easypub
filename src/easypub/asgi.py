@@ -9,39 +9,10 @@ from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
 from starlette.responses import JSONResponse
-from starlette.routing import Mount, Route
-from starlette.staticfiles import StaticFiles
 
 from easypub import config
-from easypub.endpoints import (
-    AdminEndpoint,
-    HealthEndpoint,
-    HomeEndpoint,
-    PublishEndpoint,
-    ReadEndpoint,
-    UpdateEndpoint,
-)
-from easypub.middleware import CacheControlMiddleware, TimeoutMiddleware
-
-routes = [
-    Route("/", endpoint=HomeEndpoint),
-    Mount(
-        "/static",
-        app=StaticFiles(directory=config.static.directory),
-        middleware=[Middleware(CacheControlMiddleware, immutable=True)],
-        name="static",
-    ),
-    Mount(
-        "/api",
-        routes=[
-            Route("/health", endpoint=HealthEndpoint),
-            Route("/publish", endpoint=PublishEndpoint),
-            Route("/{slug:str}/update", endpoint=UpdateEndpoint),
-        ],
-    ),
-    Route("/{slug:str}", endpoint=ReadEndpoint, name="read"),
-    Route("/{slug:str}/admin", endpoint=AdminEndpoint, name="admin"),
-]
+from easypub.middleware import TimeoutMiddleware
+from easypub.routes import routes
 
 
 async def validation_error_handler(request, exc):

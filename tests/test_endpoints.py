@@ -5,19 +5,12 @@ import pytest
 
 from starlette.exceptions import HTTPException
 from starlette.requests import Request
-from starlette.routing import Route, Router
+from starlette.routing import Router
 from starlette.templating import Jinja2Templates
 from starlette.testclient import TestClient
 
-from easypub.endpoints import (
-    AdminEndpoint,
-    HealthEndpoint,
-    HomeEndpoint,
-    PublishEndpoint,
-    ReadEndpoint,
-    UpdateEndpoint,
-    crypt_context,
-)
+from easypub.endpoints import crypt_context
+from easypub.routes import routes
 
 
 class MockS3Response:
@@ -35,16 +28,7 @@ class MockS3Response:
         return self
 
 
-app = Router(
-    routes=[
-        Route("/", endpoint=HomeEndpoint),
-        Route("/{slug:str}", endpoint=ReadEndpoint, name="read"),
-        Route("/{slug:str}/admin", endpoint=AdminEndpoint, name="admin"),
-        Route("/api/publish", endpoint=PublishEndpoint),
-        Route("/api/health", endpoint=HealthEndpoint),
-        Route("/api/{slug:str}/update", endpoint=UpdateEndpoint),
-    ]
-)
+app = Router(routes=routes)
 
 
 @pytest.fixture
