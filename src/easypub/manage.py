@@ -7,9 +7,7 @@ from easypub.endpoints import content_bucket
 
 
 async def _make_bucket():
-    buckets = await config.s3.list_buckets()
-
-    if content_bucket not in buckets:
+    if not await config.s3.bucket_exists(content_bucket):
         await config.s3.make_bucket(content_bucket)
 
 
