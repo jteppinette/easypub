@@ -126,7 +126,17 @@ button {
   padding: 10px;
   cursor: pointer;
   font-weight: bold;
+  margin-top: 8px;
+}
+
+button.primary {
+  color: white;
   background-color: #5e81ac;
+}
+
+button.danger {
+  color: white;
+  background-color: #bf616a;
 }
 
 .secret {

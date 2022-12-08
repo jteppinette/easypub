@@ -6,8 +6,10 @@ function App({ slug, title }) {
   const [validationError, setValidationError] = useState()
   const [httpError, setHTTPError] = useState()
   const [isLoading, setIsLoading] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const submitText = isLoading ? 'Updating...' : 'Update'
+  const deleteText = isDeleting ? 'Deleting...' : 'Delete'
 
   const url = `${location.protocol}//${location.host}/`
 
@@ -39,6 +41,30 @@ function App({ slug, title }) {
       .then(() => setIsLoading(false))
   }
 
+  function destroy(event) {
+    event.preventDefault()
+
+    if (confirm('Are you sure you want to delete this publication?')) {
+      setIsDeleting(true)
+
+      fetchjson(`/api/${slug}/delete`, 'POST', { secret })
+        .then(() => {
+          location.href = '/'
+        })
+        .catch(({ data, response }) => {
+          if (response.status == 422) {
+            setValidationError(data)
+            setHTTPError()
+          } else {
+            setHTTPError(response.status)
+            setValidationError()
+          }
+
+          setIsDeleting(false)
+        })
+    }
+  }
+
   return html`
     <div class="container">
       <div class="panel panel-white">
@@ -66,8 +92,14 @@ function App({ slug, title }) {
           html`<${HTTPErrorAlert} status=${httpError} />`}
           ${result && html`<${SuccessAlert} ...${result} />`}
 
-          <button disabled=${isLoading} type="submit">${submitText}</button>
+          <button disabled=${isLoading} type="submit" class="primary">
+            ${submitText}
+          </button>
         </form>
+
+        <button disabled=${isLoading} onClick=${destroy} class="danger">
+          ${deleteText}
+        </button>
       </div>
     </div>
   `

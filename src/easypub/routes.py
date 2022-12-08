@@ -5,6 +5,7 @@ from starlette.staticfiles import StaticFiles
 from easypub import config
 from easypub.endpoints import (
     AdminEndpoint,
+    DeleteEndpoint,
     HealthEndpoint,
     HomeEndpoint,
     PublishEndpoint,
@@ -27,6 +28,7 @@ routes = [
             Route("/health", endpoint=HealthEndpoint, name="health"),
             Route("/publish", endpoint=PublishEndpoint, name="publish"),
             Route("/{slug:str}/update", endpoint=UpdateEndpoint, name="update"),
+            Route("/{slug:str}/delete", endpoint=DeleteEndpoint, name="delete"),
         ],
     ),
     Route("/{slug:str}", endpoint=ReadEndpoint, name="read"),

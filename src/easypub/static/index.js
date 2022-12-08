@@ -9,8 +9,6 @@ function App() {
 
   const submitText = isLoading ? 'Publishing...' : 'Publish'
 
-  const url = `${location.protocol}//${location.host}/`
-
   function submit(event) {
     event.preventDefault()
 
@@ -58,7 +56,9 @@ function App() {
           html`<${HTTPErrorAlert} status=${httpError} />`}
           ${result && html`<${SuccessAlert} ...${result} />`}
 
-          <button disabled=${isLoading} type="submit">${submitText}</button>
+          <button disabled=${isLoading} type="submit" class="primary">
+            ${submitText}
+          </button>
         </form>
       </div>
     </div>

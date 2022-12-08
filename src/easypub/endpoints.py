@@ -171,6 +171,33 @@ class UpdateEndpoint(HTTPEndpoint):
         return JSONResponse(dict(url=request.url_for("read", slug=slug)))
 
 
+class DeleteEndpoint(HTTPEndpoint):
+    class Form(BaseModel):
+        secret: SecretStr
+
+    @limiter.limit("10/hour")
+    async def post(self, request):
+        slug = request.path_params["slug"]
+        form = self.Form.parse_obj(await request.json())
+
+        result = await config.redis.hgetall(metadata_key(slug))
+        if not result:
+            raise HTTPException(HTTPStatus.NOT_FOUND)
+
+        if not verify_crypt_hash(
+            form.secret.get_secret_value(), result[b"secret_hash"].decode()
+        ):
+            return JSONResponse(
+                {"secret": ["is incorrect"]},
+                status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+            )
+
+        await config.redis.delete(metadata_key(slug))
+        await config.s3.remove_object(content_bucket, slug)
+
+        return JSONResponse({}, status_code=200)
+
+
 class HealthEndpoint(HTTPEndpoint):
     @limiter.limit("20/minute")
     async def get(self, request):
