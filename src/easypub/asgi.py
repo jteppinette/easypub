@@ -14,10 +14,12 @@ from starlette.staticfiles import StaticFiles
 
 from easypub import config
 from easypub.endpoints import (
+    AdminEndpoint,
     HealthEndpoint,
     HomeEndpoint,
     PublishEndpoint,
     ReadEndpoint,
+    UpdateEndpoint,
 )
 from easypub.middleware import CacheControlMiddleware, TimeoutMiddleware
 
@@ -34,9 +36,11 @@ routes = [
         routes=[
             Route("/health", endpoint=HealthEndpoint),
             Route("/publish", endpoint=PublishEndpoint),
+            Route("/{slug:str}/update", endpoint=UpdateEndpoint),
         ],
     ),
-    Route("/{slug:str}", endpoint=ReadEndpoint),
+    Route("/{slug:str}", endpoint=ReadEndpoint, name="read"),
+    Route("/{slug:str}/admin", endpoint=AdminEndpoint, name="admin"),
 ]
 
 

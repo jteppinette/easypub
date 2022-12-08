@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} :: Admin{% endblock %}
+
+{% block meta %}
+<meta property="og:title" content="{{ title }} :: Admin" />
+{% endblock %}
+
+{% block css %}
+{{ super() }}
+<link
+  href="https://unpkg.com/quill@1.3.7/dist/quill.snow.css"
+  rel="stylesheet"
+/>
+<style>
+html {
+  background-color: #eceff4;
+}
+</style>
+{% endblock %}
+
+{% block body %}
+<div id="quill"></div>
+<div id="app"></div>
+{% endblock %}
+
+{% block js %}
+<script src="https://unpkg.com/quill@1.3.7/dist/quill.min.js"></script>
+<script src="https://unpkg.com/htm@3.1.1/preact/standalone.umd.js"></script>
+<script src="{{ static_url_for('static', 'common.js') }}"></script>
+<script src="{{ static_url_for('static', 'admin.js') }}"></script>
+<script>
+  editor({
+    url: {{ content_url|jsonify }},
+  })
+  app({
+    slug: {{slug|jsonify}},
+    title: {{ title|jsonify }},
+  })
+</script>
+{% endblock %}

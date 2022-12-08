@@ -1,6 +1,8 @@
+import json
 from pathlib import Path
 
 from fastapi_static_digest import StaticDigest
+from jinja2.filters import do_mark_safe
 from miniopy_async import Minio
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 from redis.asyncio import Redis
@@ -24,7 +26,14 @@ class Config(BaseSettings):
 
     @cached_property
     def templates(self):
-        return Jinja2Templates(directory=self.base_dir / "templates")
+        jinja = Jinja2Templates(directory=self.base_dir / "templates")
+
+        # Add the jsonify filter to the environment. This filter will json encode
+        # and mark the resulting text as safe. This can be used to template
+        # javascript configuration.
+        jinja.env.filters["jsonify"] = lambda v: do_mark_safe(json.dumps(v))
+
+        return jinja
 
     @cached_property
     def static(self):

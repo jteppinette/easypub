@@ -20,8 +20,18 @@ body {
   color: #2c7cde;
 }
 
+#easypub .ql-toolbar {
+  background-color: white;
+  border: solid #d8dee9;
+  border-width: 0 0 1px;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+}
+
 #easypub .ql-container {
   font-size: 16px;
+  border: none;
 }
 
 #easypub .ql-container > .ql-editor {
@@ -34,8 +44,9 @@ body {
 }
 
 #easypub .ql-container > .ql-editor {
-  border: 1px solid white;
+  border: 1px solid #d8dee9;
   padding-top: 60px;
+  background-color: white;
 }
 
 @media only screen and (min-width: 700px) {
@@ -67,4 +78,53 @@ body {
 .panel.panel-white {
   background-color: white;
   border: 1px solid #d8dee9;
+}
+
+input {
+  border: 1px solid #d8dee9;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-bottom: 12px;
+  margin-top: 4px;
+  outline: none;
+  padding: 8px;
+  width: 100%;
+}
+
+label {
+  font-weight: bold;
+}
+
+.alert {
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 8px;
+  line-height: 24px;
+}
+
+.alert.alert-danger {
+  background-color: #bf616a;
+  color: white;
+}
+
+.alert.alert-success {
+  background-color: #2e3440;
+  color: white;
+}
+
+button {
+  outline: none;
+  border: none;
+  color: white;
+  border-radius: 4px;
+  width: 100%;
+  font-size: 16px;
+  padding: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #5e81ac;
+}
+
+.secret {
+  text-align: center;
 }

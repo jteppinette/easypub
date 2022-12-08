@@ -1,13 +1,13 @@
-const { render, html, useState, useEffect } = htmPreact
+const { render, html, useState } = htmPreact
 
-function App() {
-  const [title, setTitle] = useState('')
+function App({ slug, title }) {
+  const [secret, setSecret] = useState('')
   const [result, setResult] = useState()
   const [validationError, setValidationError] = useState()
   const [httpError, setHTTPError] = useState()
   const [isLoading, setIsLoading] = useState(false)
 
-  const submitText = isLoading ? 'Publishing...' : 'Publish'
+  const submitText = isLoading ? 'Updating...' : 'Update'
 
   const url = `${location.protocol}//${location.host}/`
 
@@ -18,7 +18,7 @@ function App() {
 
     const content = document.getElementsByClassName('ql-editor')[0].innerHTML
 
-    fetchjson('/api/publish', 'POST', { title, content })
+    fetchjson(`/api/${slug}/update`, 'POST', { content, secret })
       .then(({ data }) => {
         setResult(data)
 
@@ -45,11 +45,19 @@ function App() {
         <form onSubmit=${submit}>
           <label for="title">Title</label>
           <input
-            onChange=${(e) => setTitle(e.target.value)}
             value=${title}
             type="text"
             name="title"
+            disabled
             placeholder="My Publication Name"
+          />
+
+          <label for="secret">Secret</label>
+          <input
+            value=""
+            onChange=${(e) => setSecret(e.target.value)}
+            type="password"
+            name="secret"
           />
 
           ${validationError &&
@@ -65,6 +73,9 @@ function App() {
   `
 }
 
-function app() {
-  render(html`<${App} />`, document.getElementById('app'))
+function app({ slug, title }) {
+  render(
+    html`<${App} slug=${slug} title=${title} />`,
+    document.getElementById('app')
+  )
 }

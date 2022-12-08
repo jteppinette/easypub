@@ -12,6 +12,11 @@
   href="https://unpkg.com/quill@1.3.7/dist/quill.core.css"
   rel="stylesheet"
 />
+<style>
+#easypub .ql-container > .ql-editor {
+  border-color: white;
+}
+</style>
 {% endblock %}
 
 {% block body %}
@@ -26,7 +31,7 @@
     anonymous online publisher.
     <br />
     <br />
-    If you are the owner, click <a href="#">here</a> to manage this publication.
+    If you are the owner, click <a href="{{ url_for('admin', slug=slug) }}">here</a> to manage this publication.
   </div>
 </div>
 {% endblock %}

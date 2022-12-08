@@ -4,7 +4,7 @@ import secrets
 from http import HTTPStatus
 
 from passlib.context import CryptContext
-from pydantic import BaseModel
+from pydantic import BaseModel, SecretStr
 from slugify import slugify
 
 from starlette.endpoints import HTTPEndpoint
@@ -60,8 +60,36 @@ class ReadEndpoint(HTTPEndpoint):
         return config.templates.TemplateResponse(
             "read.html",
             {
-                "request": request,
                 "content": content,
+                "request": request,
+                "slug": slug,
+                "title": result[b"title"].decode(),
+            },
+        )
+
+
+class AdminEndpoint(HTTPEndpoint):
+    @limiter.limit("10/minute")
+    @cache_control(max_age="1h")
+    async def get(self, request):
+        slug = request.path_params["slug"]
+
+        result = await config.redis.hgetall(metadata_key(slug))
+        if not result:
+            raise HTTPException(HTTPStatus.NOT_FOUND)
+
+        content_url = await config.s3.get_presigned_url(
+            "GET",
+            content_bucket,
+            slug,
+        )
+
+        return config.templates.TemplateResponse(
+            "admin.html",
+            {
+                "content_url": content_url,
+                "request": request,
+                "slug": slug,
                 "title": result[b"title"].decode(),
             },
         )
@@ -103,9 +131,44 @@ class PublishEndpoint(HTTPEndpoint):
         return JSONResponse(
             dict(
                 secret=secret,
-                url=str(request.url.replace(path=slug)),
+                url=request.url_for("read", slug=slug),
             )
         )
+
+
+class UpdateEndpoint(HTTPEndpoint):
+    class Form(BaseModel):
+        secret: SecretStr
+        content: SafeHTML
+
+    @limiter.limit("60/hour")
+    async def post(self, request):
+        slug = request.path_params["slug"]
+        form = self.Form.parse_obj(await request.json())
+
+        result = await config.redis.hgetall(metadata_key(slug))
+        if not result:
+            raise HTTPException(HTTPStatus.NOT_FOUND)
+
+        if not verify_crypt_hash(
+            form.secret.get_secret_value(), result[b"secret_hash"].decode()
+        ):
+            return JSONResponse(
+                {"secret": ["is incorrect"]},
+                status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+            )
+
+        encoded_content = gzip.compress(form.content.encode())
+        await config.s3.put_object(
+            content_bucket,
+            slug,
+            io.BytesIO(encoded_content),
+            len(encoded_content),
+            content_type="text/html",
+            metadata={"content-encoding": "gzip"},
+        )
+
+        return JSONResponse(dict(url=request.url_for("read", slug=slug)))
 
 
 class HealthEndpoint(HTTPEndpoint):
