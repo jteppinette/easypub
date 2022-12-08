@@ -133,6 +133,40 @@ class TestUpdateEndpoint:
         assert "test" in data["url"]
 
 
+class TestDeleteEndpoint:
+    def test_not_found(self, client, redis):
+        redis.hgetall.return_value = None
+
+        with pytest.raises(HTTPException, match="NOT_FOUND"):
+            client.post("/api/test/delete", json={"secret": "secret"})
+
+    def test_incorrect_password(self, client, redis):
+        redis.hgetall.return_value = {
+            b"secret_hash": b"$2b$12$kbGqdxpfbOCDxiVO7Dupee635ot/7PxgaQtStZwI7Lb4aQqLoNI8S"
+        }
+
+        response = client.post("/api/test/delete", json={"secret": "incorrect"})
+
+        assert response.status_code == 422
+
+    def test_ok(self, client, redis, s3):
+        redis.hgetall.return_value = {
+            b"secret_hash": b"$2b$12$kbGqdxpfbOCDxiVO7Dupee635ot/7PxgaQtStZwI7Lb4aQqLoNI8S"
+        }
+
+        response = client.post(
+            "/api/test/delete",
+            json={
+                "secret": "-2pTK-KBRQn7IDNMzm3oJBbAiI1QU_jC_fAz9TuZI18",
+            },
+        )
+
+        redis.delete.assert_awaited_once()
+        s3.remove_object.assert_awaited_once()
+
+        assert response.status_code == 200
+
+
 class TestHealthEndpoint:
     def test_ok(self, client, redis):
         redis.ping.return_value = True
