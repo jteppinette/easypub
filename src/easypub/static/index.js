@@ -45,7 +45,7 @@ function App() {
         <form onSubmit=${submit}>
           <label for="title">Title</label>
           <input
-            onChange=${(e) => setTitle(e.target.value)}
+            onInput=${(e) => setTitle(e.target.value)}
             value=${title}
             type="text"
             name="title"

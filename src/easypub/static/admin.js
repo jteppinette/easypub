@@ -54,8 +54,8 @@ function App({ slug, title }) {
 
           <label for="secret">Secret</label>
           <input
-            value=""
-            onChange=${(e) => setSecret(e.target.value)}
+            value=${secret}
+            onInput=${(e) => setSecret(e.target.value)}
             type="password"
             name="secret"
           />
