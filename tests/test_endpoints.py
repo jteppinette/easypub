@@ -132,6 +132,61 @@ class TestPublishEndpoint:
         assert crypt_context.verify(data["secret"], mapping["secret_hash"])
 
 
+class TestUpdateEndpoint:
+    @pytest.fixture
+    def redis_hgetall(self, config, monkeypatch):
+        mock = AsyncMock()
+        monkeypatch.setattr(config.redis, "hgetall", mock)
+        return mock
+
+    @pytest.fixture
+    def s3_put_object(self, config, monkeypatch):
+        mock = AsyncMock()
+        monkeypatch.setattr(config.s3, "put_object", mock)
+        return mock
+
+    def test_not_found(self, client, redis_hgetall):
+        redis_hgetall.return_value = None
+
+        with pytest.raises(HTTPException, match="NOT_FOUND"):
+            client.post(
+                "/api/test/update", json={"secret": "secret", "content": "<p>test</p>"}
+            )
+
+    def test_incorrect_password(self, client, redis_hgetall):
+        redis_hgetall.return_value = {
+            b"secret_hash": b"$2b$12$kbGqdxpfbOCDxiVO7Dupee635ot/7PxgaQtStZwI7Lb4aQqLoNI8S"
+        }
+
+        response = client.post(
+            "/api/test/update", json={"secret": "incorrect", "content": "<p>test</p>"}
+        )
+
+        assert response.status_code == 422
+
+    def test_ok(self, client, redis_hgetall, s3_put_object):
+        redis_hgetall.return_value = {
+            b"secret_hash": b"$2b$12$kbGqdxpfbOCDxiVO7Dupee635ot/7PxgaQtStZwI7Lb4aQqLoNI8S"
+        }
+
+        response = client.post(
+            "/api/test/update",
+            json={
+                "secret": "-2pTK-KBRQn7IDNMzm3oJBbAiI1QU_jC_fAz9TuZI18",
+                "content": "<p>test</p>",
+            },
+        )
+
+        s3_put_object.assert_awaited_once()
+
+        assert response.status_code == 200
+
+        data = response.json()
+
+        assert len(data) == 1
+        assert "test" in data["url"]
+
+
 class TestHealthEndpoint:
     @pytest.fixture
     def redis_ping(self, config, monkeypatch):
