@@ -1,3 +1,6 @@
+import easypub
+
+
 def cached_property(func):
     def wrapper(self):
         key = func.__name__
@@ -12,3 +15,10 @@ def cached_property(func):
         return value
 
     return property(wrapper)
+
+
+def get_client_ip(request):
+    if easypub.config.debug:
+        return request.client.host or "127.0.0.1"
+
+    return request.headers["cf-connecting-ip"]

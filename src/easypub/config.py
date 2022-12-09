@@ -7,11 +7,10 @@ from miniopy_async import Minio
 from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
 from redis.asyncio import Redis
 from slowapi import Limiter
-from slowapi.util import get_remote_address
 
 from starlette.templating import Jinja2Templates
 
-from easypub.utils import cached_property
+from easypub.utils import cached_property, get_client_ip
 
 
 class Config(BaseSettings):
@@ -48,7 +47,7 @@ class Config(BaseSettings):
     @cached_property
     def limiter(self):
         return Limiter(
-            key_func=get_remote_address,
+            key_func=get_client_ip,
             enabled=not self.debug,
             storage_uri=self.cache_url,
         )
