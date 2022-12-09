@@ -19,8 +19,6 @@ crypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 limiter = config.limiter
 
-content_bucket = "content"
-
 
 def generate_post_creds() -> tuple[str, str]:
     secret = secrets.token_urlsafe()
@@ -54,7 +52,7 @@ class ReadEndpoint(HTTPEndpoint):
         if not result:
             raise HTTPException(HTTPStatus.NOT_FOUND)
 
-        async with await config.s3.get_object(content_bucket, slug) as response:
+        async with await config.s3.get_object(config.content_bucket, slug) as response:
             content = await response.text()
 
         return config.templates.TemplateResponse(
@@ -80,7 +78,7 @@ class AdminEndpoint(HTTPEndpoint):
 
         content_url = await config.s3.get_presigned_url(
             "GET",
-            content_bucket,
+            config.content_bucket,
             slug,
         )
 
@@ -120,7 +118,7 @@ class PublishEndpoint(HTTPEndpoint):
 
         encoded_content = gzip.compress(form.content.encode())
         await config.s3.put_object(
-            content_bucket,
+            config.content_bucket,
             slug,
             io.BytesIO(encoded_content),
             len(encoded_content),
@@ -160,7 +158,7 @@ class UpdateEndpoint(HTTPEndpoint):
 
         encoded_content = gzip.compress(form.content.encode())
         await config.s3.put_object(
-            content_bucket,
+            config.content_bucket,
             slug,
             io.BytesIO(encoded_content),
             len(encoded_content),
@@ -193,7 +191,7 @@ class DeleteEndpoint(HTTPEndpoint):
             )
 
         await config.redis.delete(metadata_key(slug))
-        await config.s3.remove_object(content_bucket, slug)
+        await config.s3.remove_object(config.content_bucket, slug)
 
         return JSONResponse({}, status_code=200)
 

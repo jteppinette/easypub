@@ -62,6 +62,10 @@ class Config(BaseSettings):
             secure=self.storage_url.scheme == "https",
         )
 
-    @cached_property
+    @property
+    def content_bucket(self):
+        return self.storage_url.path.strip("/")
+
+    @property
     def cache_control(self):
         return not self.debug
