@@ -111,7 +111,7 @@ $ heroku addons:create heroku-redis:premium-0
 $ heroku config:set \
     CACHE_URL=`heroku config:get REDIS_URL` \
     STORAGE_URL=<storage_url>
-$ git push heroku master
+$ git push heroku main
 ```
 
 **Redis**
