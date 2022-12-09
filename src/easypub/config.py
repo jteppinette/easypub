@@ -55,8 +55,13 @@ class Config(BaseSettings):
 
     @cached_property
     def s3(self):
+        if self.storage_url.port:
+            endpoint = f"{self.storage_url.host}:{self.storage_url.port}"
+        else:
+            endpoint = self.storage_url.host
+
         return Minio(
-            endpoint=f"{self.storage_url.host}:{self.storage_url.port}",
+            endpoint=endpoint,
             access_key=self.storage_url.user,
             secret_key=self.storage_url.password,
             secure=self.storage_url.scheme == "https",
