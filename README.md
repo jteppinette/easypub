@@ -108,7 +108,7 @@ Notice, this is already included in the Heroku `Procfile`, so it is only necessa
 ```
 $ heroku create
 $ heroku addons:create heroku-redis:premium-0
-$ heroku config set \
+$ heroku config:set \
     CACHE_URL=`heroku config:get REDIS_URL` \
     STORAGE_URL=<storage_url>
 $ git push heroku master
