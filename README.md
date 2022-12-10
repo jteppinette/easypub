@@ -62,6 +62,7 @@ $ open http://localhost:8000
 ```
 CACHE_URL
 DEBUG=0
+HOST
 REQUEST_TIMEOUT=5
 STORAGE_URL
 WEB_CONCURRENCY=1
@@ -110,6 +111,7 @@ $ heroku create
 $ heroku addons:create heroku-redis:premium-0
 $ heroku config:set \
     CACHE_URL=`heroku config:get REDIS_URL` \
+    HOST=<host> \
     STORAGE_URL=<storage_url>
 $ git push heroku main
 ```

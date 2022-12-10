@@ -14,9 +14,10 @@ from easypub.utils import cached_property, get_client_ip
 
 
 class Config(BaseSettings):
-    debug: bool = False
-    request_timeout: int = 5
     cache_url: RedisDsn
+    debug: bool = False
+    host: str
+    request_timeout: int = 5
     storage_url: AnyHttpUrl
 
     @cached_property

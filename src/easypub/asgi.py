@@ -9,6 +9,7 @@ from slowapi.errors import RateLimitExceeded
 from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.gzip import GZipMiddleware
+from starlette.middleware.trustedhost import TrustedHostMiddleware
 from starlette.responses import JSONResponse
 
 from easypub import config
@@ -34,6 +35,7 @@ exception_handlers = {
 app = Starlette(
     debug=config.debug,
     middleware=[
+        Middleware(TrustedHostMiddleware, allowed_hosts=[config.host]),
         Middleware(TimeoutMiddleware, timeout=config.request_timeout),
         Middleware(GZipMiddleware),
     ],
