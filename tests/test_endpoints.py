@@ -168,9 +168,10 @@ class TestDeleteEndpoint:
 
 
 class TestHealthEndpoint:
-    def test_ok(self, client, redis):
+    def test_ok(self, client, redis, s3):
         redis.ping.return_value = True
+        s3.bucket_exists.return_value = True
 
         response = client.get("/api/health")
         assert response.status_code == HTTPStatus.OK
-        assert response.json() == {"redis": True}
+        assert response.json() == {"redis": True, "s3": True}

@@ -47,6 +47,7 @@ def s3(config):
     with patch.multiple(
         config.s3,
         new_callable=AsyncMock,
+        bucket_exists=DEFAULT,
         get_object=DEFAULT,
         get_presigned_url=DEFAULT,
         put_object=DEFAULT,

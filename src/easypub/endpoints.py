@@ -199,4 +199,16 @@ class DeleteEndpoint(HTTPEndpoint):
 class HealthEndpoint(HTTPEndpoint):
     @limiter.limit("20/minute")
     async def get(self, request):
-        return JSONResponse({"redis": await config.redis.ping()})
+        data = {"redis": False, "s3": False}
+
+        try:
+            data["redis"] = await config.redis.ping()
+        except Exception:
+            pass
+
+        try:
+            data["s3"] = await config.s3.bucket_exists(config.content_bucket)
+        except Exception:
+            pass
+
+        return JSONResponse(data)
