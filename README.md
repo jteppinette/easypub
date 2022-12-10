@@ -119,3 +119,28 @@ $ git push heroku main
 ```
 $ heroku redis:cli
 ```
+
+### S3
+
+The existing system cannot set the cors policy on the created bucket. If your bucket
+requires updating the CORS policy you can use the example below as a reference:
+
+```sh
+$ aws s3api put-bucket-cors \
+    --bucket <bucket-name> \
+    --endpoint-url https://<bucket-id>.r2.cloudflarestorage.com \
+    --cors-configuration file://cors.json
+```
+
+```json
+{
+  "CORSRules": [
+    {
+      "AllowedOrigins": ["<origin>"],
+      "AllowedHeaders": ["*"],
+      "AllowedMethods": ["GET"],
+      "MaxAgeSeconds": 3000
+    }
+  ]
+}
+```
