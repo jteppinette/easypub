@@ -1,1 +1,0 @@
-export CACHE_URL=$REDIS_URL
