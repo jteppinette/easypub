@@ -99,6 +99,7 @@ class PublishEndpoint(HTTPEndpoint):
         content: SafeHTML
 
     @limiter.limit("60/hour")
+    @cache_control(no_store=True)
     async def post(self, request):
         form = self.Form.parse_obj(await request.json())
         slug = slugify(form.title)
@@ -140,6 +141,7 @@ class UpdateEndpoint(HTTPEndpoint):
         content: SafeHTML
 
     @limiter.limit("60/hour")
+    @cache_control(no_store=True)
     async def post(self, request):
         slug = request.path_params["slug"]
         form = self.Form.parse_obj(await request.json())
@@ -174,6 +176,7 @@ class DeleteEndpoint(HTTPEndpoint):
         secret: SecretStr
 
     @limiter.limit("10/hour")
+    @cache_control(no_store=True)
     async def post(self, request):
         slug = request.path_params["slug"]
         form = self.Form.parse_obj(await request.json())
@@ -198,6 +201,7 @@ class DeleteEndpoint(HTTPEndpoint):
 
 class HealthEndpoint(HTTPEndpoint):
     @limiter.limit("20/minute")
+    @cache_control(no_store=True)
     async def get(self, request):
         data = {"redis": False, "s3": False}
 
