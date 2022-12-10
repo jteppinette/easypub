@@ -74,3 +74,17 @@ class Config(BaseSettings):
     @property
     def cache_control(self):
         return not self.debug
+
+    @property
+    def logging(self):
+        access_logs_enabled = self.debug
+
+        return {
+            "version": 1,
+            "disable_existing_loggers": False,
+            "handlers": {"console": {"class": "logging.StreamHandler"}},
+            "loggers": {
+                "": {"handlers": ["console"], "level": "INFO"},
+                "uvicorn.access": {"propagate": access_logs_enabled},
+            },
+        }

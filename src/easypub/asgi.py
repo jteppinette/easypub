@@ -1,3 +1,4 @@
+import logging.config
 from collections import defaultdict
 from http import HTTPStatus
 
@@ -42,3 +43,5 @@ app = Starlette(
 
 app.state.limiter = config.limiter
 app.state.cache_control = config.cache_control
+
+logging.config.dictConfig(config.logging)
